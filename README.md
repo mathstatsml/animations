@@ -1,4 +1,4 @@
-# setup
+# Getting Started
 
 - Windows 11
 - Python 3.9.13
@@ -12,9 +12,15 @@
 - ffmpeg
   - add ffmpeg binary to path
 - Clone repo
+- Create .env file, following .env.example and paste your Eleven Labs API Key
 - uv venv --python 3.9
 - .\.venv\Scripts\activate
 - uv pip install -r pyproject.toml
 - uv pip install "numpy==1.23.5"
 - cd demo
 - manim -pqh .\main.py Demo
+- Create folder demo/processing/assets and drag Demo.mp4, Demo.srt, and Demo.wav into there
+  - These files are located in demo/media/videos/main/1080p60
+- cd into demo/processing
+- python subtitles.py
+- Go into export.vpy and run the 4 commented-out commands at the bottom of the file
