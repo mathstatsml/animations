@@ -1,6 +1,6 @@
 # Getting Started
 
-- Windows 11
+- Windows 11 (other operating systems will work, but you will not be able to do the last step providing LaTeX in subcaptions)
 - Python 3.9.13
 - Vapoursynth R57
 - VSCode
