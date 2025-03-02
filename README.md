@@ -14,5 +14,4 @@
 - Clone repo
 - uv venv --python 3.9
 - uv pip install -r pyproject.toml
-- uv add matplotlib
 - uv pip install "numpy==1.23.5"
