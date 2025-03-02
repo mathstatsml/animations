@@ -1,0 +1,100 @@
+import ffmpeg
+import matplotlib.pyplot as plt
+import os
+import re
+from PIL import Image
+import queue
+
+plt.rc('text', usetex=True)
+plt.rc('text.latex', preamble=r'\usepackage{amsmath} \usepackage{amsfonts} \usepackage{amssymb} \usepackage{xcolor}')
+
+pattern = r"\$(.+?)\$"
+
+def convert_srt_to_ass(input_srt, output_ass_path):
+    '''
+    Scan the .srt file for any LaTeX, temporarily replace LaTeX with placeholder, then convert to a temporary .ass file. Then, insert the LaTeX back into the output .ass file.
+    '''
+    latex = queue.Queue()
+    try:
+        with open(input_srt, "r", encoding="utf-8") as file:
+            content = file.read()
+        def replace_expression(match):
+            original = match.group(0)
+            latex.put(original)
+            return "$temp$"
+        modified_file = re.sub(pattern, replace_expression, content)
+        with open("Temp.srt", "w", encoding="utf-8") as file:
+            file.write(modified_file)
+
+        ffmpeg.input("Temp.srt").output('Temp.ass', format='ass').run(overwrite_output=True)
+        with open("Temp.ass", "r", encoding="utf-8") as source_file, open('Temp2.ass', "w", encoding="utf-8") as destination_file:
+            destination_file.write(source_file.read())
+    
+        with open("Temp2.ass", "r", encoding="utf-8") as file:
+            content = file.read()
+        def replace_expression(match):
+            return latex.get()
+        modified_file = re.sub(pattern, replace_expression, content)
+        with open(output_ass_path, "w", encoding="utf-8") as file:
+            file.write(modified_file)
+
+        os.remove('Temp.srt')
+        os.remove('Temp.ass')
+        os.remove('Temp2.ass')
+    except ffmpeg.Error as e:
+        print(f"Error during conversion: {e.stderr.decode('utf-8')}")
+
+def process_latex_from_ass(input_ass, output_ass_path):
+    '''
+    Parse the LaTeX from the input .ass file, create transparent images for each LaTeX expression, and insert the images into the output .ass file.
+    '''
+    with open(input_ass, "r", encoding="utf-8") as file:
+        content = file.read()
+    
+    match_counter = 0
+
+    def replace_expression(match):
+        original = match.group(0)
+        raw_latex = original[1:-1]
+        nonlocal match_counter
+        match_counter += 1
+        return generate_image_ass(raw_latex, match_counter)
+
+    modified_file = re.sub(pattern, replace_expression, content)
+
+    with open(output_ass_path, "w", encoding="utf-8") as file:
+        file.write(modified_file)
+
+def generate_image_ass(raw_latex, match_counter):
+    png_path = "./assets/" + str(match_counter) + ".png"
+    print(png_path, raw_latex)
+    latex_to_transparent_image(raw_latex, png_path)
+    with Image.open(png_path) as img:
+        width, height = img.size
+    bounding_box_width = round(width / 5, 2)
+    bounding_box_height = round(height / 3.75, 2)
+    downshift = min(round(bounding_box_height / 3.3, 2), 16)
+    bounding_box = f"m 0 {str(downshift)} l {str(bounding_box_width)} {str(downshift)} {str(bounding_box_width)} {str(bounding_box_height + downshift)} 0 {str(bounding_box_height + downshift)} 0 {str(downshift)}"
+    return r"{\1a&HFF&\3a&HFF&\1img(" + png_path + ",0,0)\p1}" + bounding_box + r"{\p0\r}"
+
+def latex_to_transparent_image(latex_code, output_path):
+    fig, ax = plt.subplots()
+    ax.axis('off')
+    
+    text = ax.text(0, 0, f'${latex_code}$', fontsize=12, color='white', va='bottom', ha='left')
+    
+    plt.draw()
+    
+    bbox = text.get_window_extent()
+    
+    bbox_inches = bbox.transformed(fig.dpi_scale_trans.inverted())
+    
+    fig.set_size_inches(bbox_inches.width, bbox_inches.height)
+    
+    plt.savefig(output_path, bbox_inches='tight', pad_inches=0.1, transparent=True, dpi=300)
+    plt.close()
+
+# "Demo" should be replaced by the name of your files
+convert_srt_to_ass("./assets/Demo.srt", "./assets/Raw.ass")
+process_latex_from_ass("./assets/Raw.ass", "./assets/Demo.ass")
+os.remove('./assets/Raw.ass')

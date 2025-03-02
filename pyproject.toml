@@ -1,0 +1,12 @@
+[project]
+name = "mathstatsml"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "importlib-metadata>=8.6.1",
+    "manim>=0.19.0",
+    "manim-voiceover[elevenlabs,gtts,transcribe]>=0.3.7",
+    "matplotlib>=3.9.4",
+]
