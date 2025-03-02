@@ -13,7 +13,7 @@
   - add ffmpeg binary to path
 10. Clone repo
 11. Create .env file, following .env.example and paste your Eleven Labs API Key
-12. uv venv --python 3.9
+12. `uv venv --python 3.9`
 13. .\.venv\Scripts\activate
 14. uv pip install -r pyproject.toml
 15. uv pip install "numpy==1.23.5"
