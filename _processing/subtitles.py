@@ -81,7 +81,7 @@ def latex_to_transparent_image(latex_code, output_path):
     fig, ax = plt.subplots()
     ax.axis('off')
     
-    text = ax.text(0, 0, f'${latex_code}$', fontsize=13, color='black', va='bottom', ha='left')
+    text = ax.text(0, 0, f'${latex_code}$', fontsize=13, color='white', va='bottom', ha='left')
     
     plt.draw()
     

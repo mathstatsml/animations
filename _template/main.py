@@ -11,35 +11,6 @@ config.frame_height = 9
 config.pixel_width = 1920
 config.pixel_height = 1080
 
-config.background_color = WHITE
-config.background_opacity = 1
-white_objects = {
-    Angle: ('dot_color', BLACK),
-    AnnotationDot: ('stroke_color', BLACK),
-    AnnularSector: ('color', BLACK),
-    Annulus: ('color', BLACK),
-    Arrow: ('color', BLACK),
-    Arrow3D: ('color', BLACK),
-    ArrowVectorField: ('color', BLACK),
-    Code: ('background_stroke_color', BLACK),
-    CubicBezier: ('color', BLACK),
-    DashedVMobject: ('color', BLACK),
-    Dot: ('color', BLACK),
-    Dot3D: ('color', BLACK),
-    Line: ('color', BLACK),
-    Line3D: ('color', BLACK),
-    MarkupText: ('color', BLACK),
-    Polygon: ('color', BLACK),
-    Rectangle: ('color', BLACK),
-    SingleStringMathTex: ('color', BLACK),
-    StreamLines: ('color', BLACK),
-    Text: ('color', BLACK),
-    TracedPath: ('stroke_color', BLACK),
-    VectorField: ('color', BLACK),
-}
-for obj, (attr, color) in white_objects.items():
-    obj.set_default(**{attr: color})
-
 class Template(VoiceoverScene):
     def construct(self):
         self.set_speech_service(GTTSService(lang="en", transcription_model="base"))
